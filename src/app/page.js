@@ -1,95 +1,135 @@
-import Image from 'next/image'
+"use client"; // This is a client component
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import styles from './page.module.css'
 
-export default function Home() {
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/pagination';
+
+// import required modules
+import { EffectCoverflow, Pagination } from 'swiper/modules';
+
+import Header from '@/components/Header/Header';
+import Item from '@/components/Item/Item';
+import LastItem from '@/components/LastItem/LastItem';
+import Detail from '@/components/Detail/Detail';
+
+
+const CatFacts = () => {
+  const [items, setItems] = useState([]);
+  const [showMore, setShowMore] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const swiperRef = useRef(null);
+  const [detailImg, setDetailImg] = useState(null);
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get(`https://catfact.ninja/facts?page=${showMore}&limit=4&max_length=140`);
+      setItems(response.data.data);
+    } catch (error) {
+      console.error('Error fetching cat facts:', error);
+    }
+  };
+
+  const showDetail = (item, image) => {
+    setSelectedItem(item);
+    setDetailImg(image);
+  };
+
+  const closeDetail = () => {
+    setSelectedItem(null);
+  };
+
+  const getCatImageUrl = (itemId) => {
+    return `https://placekitten.com/200/200?image=${itemId}`;
+  };
+
+  const showMoreHandle = async () => {
+    console.log("clicked");
+    setShowMore(showMore + 1);
+    try {
+      await fetchItems();
+       // Aggiungi questo blocco per spostare lo slider all'inizio
+      if (swiperRef.current) {
+        swiperRef.current.swiper.slideTo(0);
+      }
+    } 
+    catch (error) {
+      console.error('Error fetching cat facts:', error);
+    }
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className={styles.container}>
+      {!selectedItem ? (
+        <div className={styles.itemContainer}>
+          <Header />
+          <Swiper
+            ref={swiperRef}
+            effect={'coverflow'}
+            grabCursor={true}
+            centeredSlides={true}
+            slidesPerView={4}
+            //responsive
+            breakpoints={
+              {
+                "640": {
+                  "slidesPerView": 1,
+                  "spaceBetween": 20
+                },
+                "768": {
+                  "slidesPerView": 2,
+                  "spaceBetween": 40
+                },
+                "1024": {
+                  "slidesPerView": 2,
+                  "spaceBetween": 50
+                },
+                "1280": {
+                  "slidesPerView": 4,
+                  "spaceBetween": 60
+                }
+              }
+            }
+            coverflowEffect={{
+              rotate: 50,
+              stretch: 0,
+              depth: 100,
+              modifier: 1,
+              slideShadows: false,
+            }}
+            parallax={true}
+            pagination={true}
+            modules={[EffectCoverflow, Pagination]}
+            className={styles.swiperContainer}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            
+          {items.map((item, index) => (
+            <SwiperSlide key={index} className={styles.swiperSlide}>
+              <Item key={index} item={item} index={index} showDetail={showDetail} getCatImageUrl={getCatImageUrl} />
+            </SwiperSlide>
+          ))}
+            <SwiperSlide className={styles.swiperSlide}>
+              <LastItem showMoreHandle={showMoreHandle} />
+            </SwiperSlide>
+
+          </Swiper>
         </div>
-      </div>
+      ) : (
+        <Detail detailImg={detailImg} selectedItem={selectedItem} closeDetail={closeDetail} getCatImageUrl={getCatImageUrl} />
+      )}
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+    </div>
+  );
+};
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default CatFacts;

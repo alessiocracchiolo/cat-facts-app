@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300&display=swap');
+.lastItem {
+  position: relative;
+
+  width: 500px;
+  height: 500px;
+  
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  cursor: default;
+    
+}
+  
+.lastItemTitle {
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 30px;
+  padding: 0 40px;
+  color: whitesmoke;
+}
+  
+
+.lastItemBtn {
+  position: relative;
+  width: 250px;
+  height: 55px;
+  border-radius: 45px;
+  border: none;
+  background: linear-gradient(90deg, rgba(115,149,111,1) 0%, rgba(24,58,55,1) 100%);;
+  color: white;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lastItemBtn:hover {
+  animation: jello-horizontal 0.9s both;
+}
+
+@keyframes jello-horizontal {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  30% {
+    transform: scale3d(1.25, 0.75, 1);
+  }
+
+  40% {
+    transform: scale3d(0.75, 1.25, 1);
+  }
+
+  50% {
+    transform: scale3d(1.15, 0.85, 1);
+  }
+
+  65% {
+    transform: scale3d(0.95, 1.05, 1);
+  }
+
+  75% {
+    transform: scale3d(1.05, 0.95, 1);
+  }
+
+  100% {
+    transform: scale3d(1, 1, 1);
+  }
+}
